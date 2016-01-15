@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file alias="memory_usage">memory_usage.png</file>
+    </qresource>
+</RCC>

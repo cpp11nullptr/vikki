@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file alias="load_average">load_average.png</file>
+    </qresource>
+</RCC>

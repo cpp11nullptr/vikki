@@ -1,0 +1,7 @@
+# agent
+agent/build/
+agent/*.user
+
+# client
+client/build/
+client/*.user
