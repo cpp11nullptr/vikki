@@ -30,8 +30,6 @@ SOFTWARE.
 #include "exception.h"
 #include "sensor.h"
 
-#include <string>
-
 namespace vikki
 {
 	class load_average_sensor

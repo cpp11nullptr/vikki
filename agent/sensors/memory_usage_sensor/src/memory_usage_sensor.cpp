@@ -70,16 +70,18 @@ namespace vikki
 		uint64_t swap_total = parse_mem_param(buffer, "SwapTotal:");
 		uint64_t swap_free = parse_mem_param(buffer, "SwapFree:");
 
-		std::vector<char> result(sizeof(uint64_t) * 7);
+		std::vector<char> result(sizeof(uint64_t) * 6);
 
-		*reinterpret_cast<uint64_t*>(result.data()) = total;
-		*reinterpret_cast<uint64_t*>(result.data() + sizeof(uint64_t)) = free;
+		void *ptr = result.data();
 
-		*reinterpret_cast<uint64_t*>(result.data() + sizeof(uint64_t) * 2) = buffers;
-		*reinterpret_cast<uint64_t*>(result.data() + sizeof(uint64_t) * 3) = cached;
+		write_data<uint64_t>(ptr, total, &ptr);
+		write_data<uint64_t>(ptr, free, &ptr);
 
-		*reinterpret_cast<uint64_t*>(result.data() + sizeof(uint64_t) * 4) = swap_total;
-		*reinterpret_cast<uint64_t*>(result.data() + sizeof(uint64_t) * 5) = swap_free;
+		write_data<uint64_t>(ptr, buffers, &ptr);
+		write_data<uint64_t>(ptr, cached, &ptr);
+
+		write_data<uint64_t>(ptr, swap_total, &ptr);
+		write_data<uint64_t>(ptr, swap_free, &ptr);
 
 		int err = close(fd);
 		if (err < 0)

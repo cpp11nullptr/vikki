@@ -29,6 +29,7 @@ SOFTWARE.
 
 #include <string>
 #include <vector>
+#include <map>
 
 namespace vikki
 {
@@ -41,7 +42,22 @@ namespace vikki
 		virtual std::string name() const = 0;
 		virtual std::vector<char> data() = 0;
 
+		virtual void init(const std::map<std::string, std::string>& params);
+
+	protected:
+		template<typename T>
+		void write_data(void *p, T value, void **pp);
+
 	};
+
+	template<typename T>
+	void sensor::write_data(void *p, T value, void **pp)
+	{
+		T *pT = reinterpret_cast<T*>(p);
+
+		*pT = value;
+		*pp = pT + 1;
+	}
 }
 
 #endif // VIKKI_AGENT_SENSOR_H

@@ -60,6 +60,9 @@ namespace Vikki
 		virtual void sensorDataUpdated(NetworkStreamInPointer stream) = 0;
 
 	protected:
+		template<typename T>
+		T readData(void *ptr, void **outPtr);
+
 		virtual void createEvent();
 		virtual void destroyEvent();
 
@@ -102,6 +105,15 @@ namespace Vikki
 		void showLegendToggled(bool checked);
 
 	};
+
+	template<typename T>
+	T SensorDashboard::readData(void *ptr, void **outPtr)
+	{
+		T *ptrT = reinterpret_cast<T*>(ptr);
+		*outPtr = ptrT + 1;
+
+		return *ptrT;
+	}
 }
 
 #endif // VIKKI_SENSOR_DASHBOARD_H

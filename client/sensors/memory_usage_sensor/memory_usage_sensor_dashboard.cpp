@@ -26,6 +26,8 @@ SOFTWARE.
 
 #include "memory_usage_sensor_dashboard.h"
 
+#include <cstring>
+
 namespace Vikki
 {
 	MemoryUsageSensorDashboard::MemoryUsageSensorDashboard(const QString& sensorName, const QString& sensorTitle)
@@ -53,11 +55,16 @@ namespace Vikki
 			int64_t timePoint = stream->readInt64();
 			QVector<char> dataChunk = stream->readDataChunk();
 
-			uint64_t memoryTotal = *reinterpret_cast<uint64_t*>(dataChunk.data());
-			uint64_t memoryFree = *reinterpret_cast<uint64_t*>(dataChunk.data() + sizeof(uint64_t));
+			void *ptr = dataChunk.data();
 
-			uint64_t swapTotal = *reinterpret_cast<uint64_t*>(dataChunk.data() + sizeof(uint64_t) * 4);
-			uint64_t swapFree = *reinterpret_cast<uint64_t*>(dataChunk.data() + sizeof(uint64_t) * 5);
+			uint64_t memoryTotal = readData<uint64_t>(ptr, &ptr);
+			uint64_t memoryFree = readData<uint64_t>(ptr, &ptr);
+
+			readData<uint64_t>(ptr, &ptr); // memoryBuffers
+			readData<uint64_t>(ptr, &ptr); // memoryCached
+
+			uint64_t swapTotal = readData<uint64_t>(ptr, &ptr);
+			uint64_t swapFree = readData<uint64_t>(ptr, &ptr);
 
 			time.push_back(static_cast<double>(timePoint));
 
@@ -84,11 +91,16 @@ namespace Vikki
 		int64_t timePoint = stream->readInt64();
 		QVector<char> dataChunk = stream->readDataChunk();
 
-		uint64_t memoryTotal = *reinterpret_cast<uint64_t*>(dataChunk.data());
-		uint64_t memoryFree = *reinterpret_cast<uint64_t*>(dataChunk.data() + sizeof(uint64_t));
+		void *ptr = dataChunk.data();
 
-		uint64_t swapTotal = *reinterpret_cast<uint64_t*>(dataChunk.data() + sizeof(uint64_t) * 4);
-		uint64_t swapFree = *reinterpret_cast<uint64_t*>(dataChunk.data() + sizeof(uint64_t) * 5);
+		uint64_t memoryTotal = readData<uint64_t>(ptr, &ptr);
+		uint64_t memoryFree = readData<uint64_t>(ptr, &ptr);
+
+		readData<uint64_t>(ptr, &ptr); // memoryBuffers
+		readData<uint64_t>(ptr, &ptr); // memoryCached
+
+		uint64_t swapTotal = readData<uint64_t>(ptr, &ptr);
+		uint64_t swapFree = readData<uint64_t>(ptr, &ptr);
 
 		double time = static_cast<double>(timePoint);
 

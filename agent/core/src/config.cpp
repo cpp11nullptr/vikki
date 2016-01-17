@@ -79,16 +79,16 @@ namespace vikki
 
 		_storage.name = node["name"].get<std::string>();
 
-		std::map<std::string, std::string> params;
-
-		const std::map<std::string, nlohmann::json>& node_params = node["params"];
-
-		for (const std::pair<std::string, nlohmann::json>& iter : node_params)
+		nlohmann::json params_node = node["params"];
+		if (!params_node.is_null())
 		{
-			params[iter.first] = iter.second.get<std::string>();
-		}
+			const std::map<std::string, nlohmann::json>& params = params_node;
 
-		_storage.params = params;
+			for (const std::pair<std::string, nlohmann::json>& iter : params)
+			{
+				_storage.params[iter.first] = iter.second.get<std::string>();
+			}
+		}
 	}
 
 	void config::load_sensors_settings(const nlohmann::json& node)
@@ -99,6 +99,17 @@ namespace vikki
 
 			info.active = sensor["active"].get<bool>();
 			info.name = sensor["name"].get<std::string>();
+
+			nlohmann::json params_node = sensor["params"];
+			if (!params_node.is_null())
+			{
+				const std::map<std::string, nlohmann::json>& params = params_node;
+
+				for (const std::pair<std::string, nlohmann::json>& iter : params)
+				{
+					info.params[iter.first] = iter.second.get<std::string>();
+				}
+			}
 
 			_sensors.push_back(info);
 		}
@@ -118,27 +129,20 @@ namespace vikki
 		_network.address = node["address"].get<std::string>();
 		_network.port = node["port"].get<int>();
 
-		network_security_info security;
-		security.enable = false;
+		_network.security.enable = false;
 
 		nlohmann::json security_node = node["security"];
 		if (!security_node.is_null())
 		{
-			security.enable = security_node["enable"].get<bool>();
-			security.type = security_node["type"].get<std::string>();
+			_network.security.enable = security_node["enable"].get<bool>();
+			_network.security.type = security_node["type"].get<std::string>();
 
-			std::map<std::string, std::string> params;
+			const std::map<std::string, nlohmann::json>& params = security_node["params"];
 
-			const std::map<std::string, nlohmann::json>& security_params = security_node["params"];
-
-			for (const std::pair<std::string, nlohmann::json>& iter : security_params)
+			for (const std::pair<std::string, nlohmann::json>& iter : params)
 			{
-				params[iter.first] = iter.second.get<std::string>();
+				_network.security.params[iter.first] = iter.second.get<std::string>();
 			}
-
-			security.params = params;
 		}
-
-		_network.security = security;
 	}
 }

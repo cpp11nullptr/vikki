@@ -35,4 +35,8 @@ namespace vikki
 	sensor::~sensor()
 	{
 	}
+
+	void sensor::init(const std::map<std::string, std::string>& params)
+	{
+	}
 }

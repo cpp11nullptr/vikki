@@ -50,6 +50,7 @@ namespace vikki
 		{
 			bool active;
 			std::string name;
+			std::map<std::string, std::string> params;
 		};
 
 		struct network_security_info

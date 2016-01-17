@@ -26,6 +26,8 @@ SOFTWARE.
 
 #include "load_average_sensor_dashboard.h"
 
+#include <cstring>
+
 namespace Vikki
 {
 	LoadAverageSensorDashboard::LoadAverageSensorDashboard(const QString& sensorName, const QString& sensorTitle)
@@ -52,9 +54,11 @@ namespace Vikki
 			int64_t timePoint = stream->readInt64();
 			QVector<char> dataChunk = stream->readDataChunk();
 
-			double la1 = *reinterpret_cast<double*>(dataChunk.data());
-			double la5 = *reinterpret_cast<double*>(dataChunk.data() + sizeof(double));
-			double la15 = *reinterpret_cast<double*>(dataChunk.data() + sizeof(double) * 2);
+			void *ptr = dataChunk.data();
+
+			double la1 = readData<double>(ptr, &ptr);
+			double la5 = readData<double>(ptr, &ptr);
+			double la15 = readData<double>(ptr, &ptr);
 
 			time.push_back(static_cast<double>(timePoint));
 
@@ -79,9 +83,11 @@ namespace Vikki
 		int64_t timePoint = stream->readInt64();
 		QVector<char> dataChunk = stream->readDataChunk();
 
-		double la1 = *reinterpret_cast<double*>(dataChunk.data());
-		double la5 = *reinterpret_cast<double*>(dataChunk.data() + sizeof(double));
-		double la15 = *reinterpret_cast<double*>(dataChunk.data() + sizeof(double) * 2);
+		void *ptr = dataChunk.data();
+
+		double la1 = readData<double>(ptr, &ptr);
+		double la5 = readData<double>(ptr, &ptr);
+		double la15 = readData<double>(ptr, &ptr);
 
 		double time = static_cast<double>(timePoint);
 
@@ -99,7 +105,7 @@ namespace Vikki
 		mGraph5m->addData(time, la5);
 		mGraph15m->addData(time, la15);
 
-		updatePlot(0.0, mMaxY * 1.2);
+		updatePlot(0.0, mMaxY * 1.1);
 	}
 
 	void LoadAverageSensorDashboard::createEvent()

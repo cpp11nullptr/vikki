@@ -84,6 +84,10 @@ namespace vikki
 				continue;
 			}
 
+			sensor *sens = sensor_loader::instance().get_sensor(sensor_info.name);
+
+			sens->init(sensor_info.params);
+
 			if (_active_storage != nullptr)
 			{
 				_active_storage->prepare_entity(sensor_info.name);
