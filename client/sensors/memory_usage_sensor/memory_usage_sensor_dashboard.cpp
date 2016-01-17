@@ -75,6 +75,7 @@ namespace Vikki
 			valueSwapUsed.push_back(static_cast<double>(swapTotal - swapFree) / (1024 * 1024));
 
 			mMaxY = memoryTotal > mMaxY ? memoryTotal : mMaxY;
+			mMaxY = swapTotal > mMaxY ? swapTotal : mMaxY;
 		}
 
 		mGraphMemoryTotal->setData(time, valueMemoryTotal);
@@ -83,7 +84,7 @@ namespace Vikki
 		mGraphSwapTotal->setData(time, valueSwapTotal);
 		mGraphSwapUsed->setData(time, valueSwapUsed);
 
-		updatePlot(0.0, mMaxY / (1024 * 1024) * 1.2);
+		updatePlot(0.0, mMaxY / (1024 * 1024) * 1.1);
 	}
 
 	void MemoryUsageSensorDashboard::sensorDataUpdated(NetworkStreamInPointer stream)
