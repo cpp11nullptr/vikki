@@ -30,6 +30,9 @@ SOFTWARE.
 #include <unistd.h>
 #include <string.h>
 
+#include <cstdlib>
+#include <cerrno>
+
 namespace vikki
 {
 	memory_usage_sensor::memory_usage_sensor()
