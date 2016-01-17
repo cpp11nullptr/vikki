@@ -24,7 +24,6 @@ include_directories(
 
 find_package(Threads REQUIRED)
 find_package(OpenSSL REQUIRED)
-#find_library(DL dl REQUIRED)
 
 aux_source_directory(src SOURCES_BASE)
 aux_source_directory(src/network SOURCES_NETWORK)

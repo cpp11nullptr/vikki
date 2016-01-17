@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 project(memory_usage_sensor)
 
-set(CMAKE_C_STANDARD 11)
-set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(CMAKE_SYSTEM_NAME STREQUAL FreeBSD)
 	include_directories("/usr/local/include")
