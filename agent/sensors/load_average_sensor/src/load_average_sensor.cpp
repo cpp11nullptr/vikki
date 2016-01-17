@@ -33,6 +33,9 @@ SOFTWARE.
 #include <cstdlib>
 #include <cerrno>
 
+#include <cstdlib>
+#include <cerrno>
+
 namespace vikki
 {
 	load_average_sensor::load_average_sensor()
