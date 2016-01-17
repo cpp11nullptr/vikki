@@ -30,6 +30,9 @@ SOFTWARE.
 #include <unistd.h>
 #include <cstring>
 
+#include <cstdlib>
+#include <cerrno>
+
 namespace vikki
 {
 	load_average_sensor::load_average_sensor()
