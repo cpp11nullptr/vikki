@@ -13,7 +13,7 @@ QMAKE_CXXFLAGS += \
 	-std=c++11
 
 TARGET =\
-	load_average_sensor
+	file_system_usage_sensor
 
 SOURCES += \
 	../../core/sensor/sensor_plugin.cpp \
@@ -22,8 +22,8 @@ SOURCES += \
 	../../core/plot/qcustomplot.cpp \
 	../../core/network/network_stream_in.cpp \
 	../../core/network/network_stream_out.cpp \
-	load_average_sensor.cpp \
-	load_average_sensor_dashboard.cpp
+	file_system_usage_sensor.cpp \
+	file_system_usage_sensor_dashboard.cpp
 
 HEADERS += \
 	../../core/sensor/sensor_plugin.h \
@@ -32,8 +32,8 @@ HEADERS += \
 	../../core/plot/qcustomplot.h \
 	../../core/network/network_stream_in.h \
 	../../core/network/network_stream_out.h \
-	load_average_sensor.h \
-	load_average_sensor_dashboard.h
+	file_system_usage_sensor.h \
+	file_system_usage_sensor_dashboard.h
 
 RESOURCES += \
     icons.qrc

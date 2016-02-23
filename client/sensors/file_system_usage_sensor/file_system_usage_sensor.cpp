@@ -24,41 +24,36 @@ SOFTWARE.
 
 */
 
-#ifndef VIKKI_LOAD_AVERAGE_SENSOR_DASHBOARD_H
-#define VIKKI_LOAD_AVERAGE_SENSOR_DASHBOARD_H
-
-#include "../../core/sensor/sensor_dashboard.h"
-#include "../../core/sensor/sensor_dashboard_plot.h"
-
-#include "../../core/plot/qcustomplot.h"
-#include "../../core/network/network_stream_in.h"
+#include "file_system_usage_sensor.h"
 
 namespace Vikki
 {
-	class LoadAverageSensorDashboard
-		: public SensorDashboard
+	FileSystemUsageSensor::FileSystemUsageSensor()
 	{
-		Q_OBJECT
+	}
 
-	public:
-		LoadAverageSensorDashboard(const QString& sensorName, const QString& sensorTitle);
-		~LoadAverageSensorDashboard() override;
+	FileSystemUsageSensor::~FileSystemUsageSensor()
+	{
+	}
 
-		void sensorDataReceived(NetworkStreamInPointer stream) override;
-		void sensorDataUpdated(NetworkStreamInPointer stream) override;
+	QString FileSystemUsageSensor::name() const
+	{
+		return "file_system_usage";
+	}
 
-	protected:
-		QWidget* createDashboardWidget() override;
+	QString FileSystemUsageSensor::title() const
+	{
+		return tr("File system usage");
+	}
 
-	private:
-		double mMaxY;
-		SensorDashboardPlot *mPlot;
-		QCPGraph *mGraph1m;
-		QCPGraph *mGraph5m;
-		QCPGraph *mGraph15m;
+	QIcon FileSystemUsageSensor::icon() const
+	{
+		return QIcon(":/icons/file_system_usage");
+	}
 
-	};
+	SensorDashboard* FileSystemUsageSensor::createDashboard() const
+	{
+		return new FileSystemUsageSensorDashboard(name(), title());
+	}
 }
-
-#endif // VIKKI_LOAD_AVERAGE_SENSOR_DASHBOARD_H
 

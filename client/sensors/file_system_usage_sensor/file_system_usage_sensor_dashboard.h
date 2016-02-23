@@ -24,8 +24,8 @@ SOFTWARE.
 
 */
 
-#ifndef VIKKI_LOAD_AVERAGE_SENSOR_DASHBOARD_H
-#define VIKKI_LOAD_AVERAGE_SENSOR_DASHBOARD_H
+#ifndef VIKKI_FILE_SYSTEM_USAGE_SENSOR_DASHBOARD_H
+#define VIKKI_FILE_SYSTEM_USAGE_SENSOR_DASHBOARD_H
 
 #include "../../core/sensor/sensor_dashboard.h"
 #include "../../core/sensor/sensor_dashboard_plot.h"
@@ -35,14 +35,14 @@ SOFTWARE.
 
 namespace Vikki
 {
-	class LoadAverageSensorDashboard
+	class FileSystemUsageSensorDashboard
 		: public SensorDashboard
 	{
 		Q_OBJECT
 
 	public:
-		LoadAverageSensorDashboard(const QString& sensorName, const QString& sensorTitle);
-		~LoadAverageSensorDashboard() override;
+		FileSystemUsageSensorDashboard(const QString& sensorName, const QString& sensorTitle);
+		~FileSystemUsageSensorDashboard() override;
 
 		void sensorDataReceived(NetworkStreamInPointer stream) override;
 		void sensorDataUpdated(NetworkStreamInPointer stream) override;
@@ -51,14 +51,44 @@ namespace Vikki
 		QWidget* createDashboardWidget() override;
 
 	private:
-		double mMaxY;
-		SensorDashboardPlot *mPlot;
-		QCPGraph *mGraph1m;
-		QCPGraph *mGraph5m;
-		QCPGraph *mGraph15m;
+		struct FileSystemUsage
+		{
+			QString dir;
+			QString device;
+			QString options;
+			uint64_t total;
+			uint64_t free;
+			uint64_t available;
+			uint64_t files;
+			uint64_t freeFiles;
+		};
+
+		struct TimeStampInfo
+		{
+			int64_t timePoint;
+			QVector<char> data;
+		};
+
+		SensorDashboardPlot *mSpacePlot;
+		SensorDashboardPlot *mFilePlot;
+
+		QCPBars *mSpaceUsageBar;
+		QCPBars *mFileUsageBar;
+
+		QSlider *mTimeScale;
+		QLabel *mTimeStamp;
+		QVector<TimeStampInfo> mTimeStampData;
+
+		SensorDashboardPlot* createPlot(QCPBars *&usageBar) const;
+
+		QVector<FileSystemUsage> fileSystemUsage(const QVector<char>& data) const;
+
+	private slots:
+		void timeScaleMoved();
+		void timeScaleReleased();
 
 	};
 }
 
-#endif // VIKKI_LOAD_AVERAGE_SENSOR_DASHBOARD_H
+#endif // VIKKI_FILE_SYSTEM_USAGE_SENSOR_DASHBOARD_H
 

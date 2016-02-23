@@ -38,7 +38,8 @@ SOURCES += \
     network/network_stream_out.cpp \
     sensor/sensor_plugin.cpp \
     sensor/sensor_dashboard.cpp \
-    sensor/sensor_client_proxy.cpp
+    sensor/sensor_client_proxy.cpp \
+    sensor/sensor_dashboard_plot.cpp
 
 HEADERS += \
     application.h \
@@ -56,7 +57,8 @@ HEADERS += \
     network/network_stream_out.h \
     sensor/sensor_plugin.h \
     sensor/sensor_dashboard.h \
-    sensor/sensor_client_proxy.h
+    sensor/sensor_client_proxy.h \
+    sensor/sensor_dashboard_plot.h
 
 RESOURCES += \
     resources.qrc

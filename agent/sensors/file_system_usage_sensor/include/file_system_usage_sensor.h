@@ -24,41 +24,54 @@ SOFTWARE.
 
 */
 
-#ifndef VIKKI_LOAD_AVERAGE_SENSOR_DASHBOARD_H
-#define VIKKI_LOAD_AVERAGE_SENSOR_DASHBOARD_H
+#ifndef VIKKI_FILE_SYSTEM_USAGE_SENSOR_H
+#define VIKKI_FILE_SYSTEM_USAGE_SENSOR_H
 
-#include "../../core/sensor/sensor_dashboard.h"
-#include "../../core/sensor/sensor_dashboard_plot.h"
+#include "exception.h"
+#include "sensor.h"
 
-#include "../../core/plot/qcustomplot.h"
-#include "../../core/network/network_stream_in.h"
-
-namespace Vikki
+namespace vikki
 {
-	class LoadAverageSensorDashboard
-		: public SensorDashboard
+	class file_system_usage_sensor
+		: public sensor
 	{
-		Q_OBJECT
-
 	public:
-		LoadAverageSensorDashboard(const QString& sensorName, const QString& sensorTitle);
-		~LoadAverageSensorDashboard() override;
+		file_system_usage_sensor();
+		~file_system_usage_sensor() override;
 
-		void sensorDataReceived(NetworkStreamInPointer stream) override;
-		void sensorDataUpdated(NetworkStreamInPointer stream) override;
-
-	protected:
-		QWidget* createDashboardWidget() override;
+		std::string name() const override;
+		std::vector<char> data() override;
 
 	private:
-		double mMaxY;
-		SensorDashboardPlot *mPlot;
-		QCPGraph *mGraph1m;
-		QCPGraph *mGraph5m;
-		QCPGraph *mGraph15m;
+		struct file_system
+		{
+			std::string dir;
+			std::string device;
+			std::string type;
+			std::string options;
+		};
+
+		struct file_system_info
+		{
+			uint64_t total;
+			uint64_t free;
+			uint64_t avail;
+			uint64_t files;
+			uint64_t free_files;
+		};
+
+		uint64_t blocks_to_bytes(uint64_t value, uint64_t bsize) const;
+
+		std::vector<file_system> get_file_system_list() const;
+		file_system_info get_file_system_info(const std::string& dir) const;
 
 	};
+
+	extern "C"
+	{
+		sensor* create_sensor();
+		void destroy_sensor(sensor *handle);
+	}
 }
 
-#endif // VIKKI_LOAD_AVERAGE_SENSOR_DASHBOARD_H
-
+#endif // VIKKI_FILE_SYSTEM_USAGE_SENSOR_H

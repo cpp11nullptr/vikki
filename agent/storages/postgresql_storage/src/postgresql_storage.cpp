@@ -139,6 +139,7 @@ namespace vikki
 			error += PQerrorMessage(conn);
 
 			PQclear(result);
+			PQfinish(conn);
 
 			throw exception(error);
 		}
@@ -155,6 +156,7 @@ namespace vikki
 		}
 
 		PQclear(result);
+		PQfinish(conn);
 
 		return data;
 	}

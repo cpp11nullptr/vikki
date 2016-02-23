@@ -24,41 +24,34 @@ SOFTWARE.
 
 */
 
-#ifndef VIKKI_LOAD_AVERAGE_SENSOR_DASHBOARD_H
-#define VIKKI_LOAD_AVERAGE_SENSOR_DASHBOARD_H
+#ifndef VIKKI_FILE_SYSTEM_USAGE_SENSOR_H
+#define VIKKI_FILE_SYSTEM_USAGE_SENSOR_H
 
-#include "../../core/sensor/sensor_dashboard.h"
-#include "../../core/sensor/sensor_dashboard_plot.h"
+#include "../../core/sensor/sensor_plugin.h"
 
-#include "../../core/plot/qcustomplot.h"
-#include "../../core/network/network_stream_in.h"
+#include "file_system_usage_sensor_dashboard.h"
 
 namespace Vikki
 {
-	class LoadAverageSensorDashboard
-		: public SensorDashboard
+	class FileSystemUsageSensor
+		: public SensorPlugin
 	{
 		Q_OBJECT
+		Q_PLUGIN_METADATA(IID "com.organization.vikki.SensorPlugin")
+		Q_INTERFACES(Vikki::SensorPlugin)
 
 	public:
-		LoadAverageSensorDashboard(const QString& sensorName, const QString& sensorTitle);
-		~LoadAverageSensorDashboard() override;
+		FileSystemUsageSensor();
+		~FileSystemUsageSensor() override;
 
-		void sensorDataReceived(NetworkStreamInPointer stream) override;
-		void sensorDataUpdated(NetworkStreamInPointer stream) override;
+		QString name() const override;
+		QString title() const override;
+		QIcon icon() const override;
 
-	protected:
-		QWidget* createDashboardWidget() override;
-
-	private:
-		double mMaxY;
-		SensorDashboardPlot *mPlot;
-		QCPGraph *mGraph1m;
-		QCPGraph *mGraph5m;
-		QCPGraph *mGraph15m;
+		SensorDashboard* createDashboard() const override;
 
 	};
 }
 
-#endif // VIKKI_LOAD_AVERAGE_SENSOR_DASHBOARD_H
+#endif // VIKKI_FILE_SYSTEM_USAGE_SENSOR_H
 

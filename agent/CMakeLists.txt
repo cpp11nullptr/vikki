@@ -5,6 +5,7 @@ option(VIKKI_POSTGRESQL_STORAGE "PostgreSQL storage" TRUE)
 
 option(VIKKI_LOAD_AVERAGE_SENSOR "Load average sensor" TRUE)
 option(VIKKI_MEMORY_USAGE_SENSOR "Memory usage sensor" TRUE)
+option(VIKKI_FILE_SYSTEM_USAGE_SENSOR "File system usage sensor" TRUE)
 
 add_subdirectory(core)
 add_subdirectory(storages)
