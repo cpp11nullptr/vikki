@@ -75,9 +75,13 @@ namespace Vikki
 
 	void SensorClientProxy::getSensorData(uint from, uint to)
 	{
+		mSensorDashboard->hideDashboardWidget();
+
 		auto callback = [this](NetworkStreamInPointer stream)
 		{
 			mSensorDashboard->sensorDataReceived(stream);
+
+			mSensorDashboard->showDashboardWidget();
 		};
 
 		NetworkStreamOutPointer stream = mClient->connection()->createStream(Command::GET_SENSOR_DATA, callback);

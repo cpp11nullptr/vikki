@@ -35,8 +35,8 @@ SOFTWARE.
 #include <QDateTimeEdit>
 #include <QCheckBox>
 #include <QPushButton>
+#include <QGroupBox>
 
-#include "../plot/qcustomplot.h"
 #include "../network/network_stream_in.h"
 
 namespace Vikki
@@ -59,17 +59,14 @@ namespace Vikki
 		virtual void sensorDataReceived(NetworkStreamInPointer stream) = 0;
 		virtual void sensorDataUpdated(NetworkStreamInPointer stream) = 0;
 
-	protected:
-		virtual void createEvent();
-		virtual void destroyEvent();
+		void showDashboardWidget();
+		void hideDashboardWidget();
 
-		QCustomPlot* plot() const;
+	protected:
+		virtual QWidget* createDashboardWidget() = 0;
 
 		QDateTimeEdit* periodFrom() const;
 		QDateTimeEdit* periodTo() const;
-
-		QCPGraph* createGraph(const QString& name, const QColor& color);
-		void updatePlot(double yLower, double yUpper);
 
 	private:
 		QString mSensorName;
@@ -80,9 +77,9 @@ namespace Vikki
 
 		QCheckBox *mAutoRefresh;
 		QPushButton *mRefresh;
-		QCheckBox *mShowLegend;
 
-		QCustomPlot *mPlot;
+		QWidget *mDashboardWidget;
+		QWidget *mDummyWidget;
 
 		void refreshData();
 
@@ -91,15 +88,8 @@ namespace Vikki
 		void subscribeSensorData(bool subscribe);
 
 	private slots:
-		void plotMouseWheel(QWheelEvent *event);
-
-		void periodFromChanged(const QDateTime& dateTime);
-		void periodToChanged(const QDateTime& dateTime);
-
 		void autoRefreshToggled(bool checked);
 		void refreshClicked();
-
-		void showLegendToggled(bool checked);
 
 	};
 }

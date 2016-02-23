@@ -29,7 +29,7 @@ SOFTWARE.
 namespace Vikki
 {
 	SensorDashboard::SensorDashboard(const QString& sensorName, const QString& sensorTitle)
-		: mSensorName(sensorName), mSensorTitle(sensorTitle)
+		: mSensorName(sensorName), mSensorTitle(sensorTitle), mDashboardWidget(nullptr)
 	{
 	}
 
@@ -41,17 +41,13 @@ namespace Vikki
 	{
 		mPeriodFrom = new QDateTimeEdit();
 		mPeriodFrom->setDateTime(QDateTime::currentDateTime().addSecs(-60 * 60));
-		mPeriodFrom->setDisplayFormat("MM/dd/yyyy HH:mm:ss");
+		mPeriodFrom->setDisplayFormat("dd/MM/yyyy HH:mm:ss");
 		mPeriodFrom->setCalendarPopup(true);
-
-		connect(mPeriodFrom, &QDateTimeEdit::dateTimeChanged, this, &SensorDashboard::periodFromChanged);
 
 		mPeriodTo = new QDateTimeEdit();
 		mPeriodTo->setDateTime(QDateTime::currentDateTime());
-		mPeriodTo->setDisplayFormat("MM/dd/yyyy HH:mm:ss");
+		mPeriodTo->setDisplayFormat("dd/MM/yyyy HH:mm:ss");
 		mPeriodTo->setCalendarPopup(true);
-
-		connect(mPeriodTo, &QDateTimeEdit::dateTimeChanged, this, &SensorDashboard::periodToChanged);
 
 		mAutoRefresh = new QCheckBox(tr("Auto"));
 
@@ -70,50 +66,16 @@ namespace Vikki
 		periodLayout->addWidget(mAutoRefresh);
 		periodLayout->addWidget(mRefresh);
 
-		mShowLegend = new QCheckBox(tr("Show legend"));
-		mShowLegend->setChecked(true);
-
-		connect(mShowLegend, &QCheckBox::toggled, this, &SensorDashboard::showLegendToggled);
-
-		QHBoxLayout *optionsLayout = new QHBoxLayout();
-		optionsLayout->addWidget(mShowLegend);
-		optionsLayout->addStretch();
-
-		mPlot = new QCustomPlot();
-		mPlot->setNotAntialiasedElement(QCP::aeAll);
-		mPlot->setNoAntialiasingOnDrag(true);
-
-		connect(mPlot, &QCustomPlot::mouseWheel, this, &SensorDashboard::plotMouseWheel);
-
-		mPlot->xAxis->grid()->setAntialiased(false);
-		mPlot->yAxis->grid()->setAntialiased(false);
-
-		mPlot->xAxis->grid()->setPen(QPen(QColor(200, 200, 200), 1, Qt::DotLine));
-		mPlot->yAxis->grid()->setPen(QPen(QColor(200, 200, 200), 1, Qt::DotLine));
-		mPlot->xAxis->grid()->setSubGridPen(QPen(QColor(160, 160, 160), 1, Qt::DotLine));
-		mPlot->yAxis->grid()->setSubGridPen(QPen(QColor(160, 160, 160), 1, Qt::DotLine));
-		mPlot->xAxis->grid()->setSubGridVisible(true);
-		mPlot->yAxis->grid()->setSubGridVisible(true);
-
-		mPlot->xAxis->setLabel("Timeline");
-		mPlot->yAxis->setLabel("Data");
-
-		mPlot->xAxis->setDateTimeFormat("HH:mm:ss\nMM/dd/yyyy");
-		mPlot->xAxis->setTickLabelType(QCPAxis::ltDateTime);
-		mPlot->xAxis->setTickStep(60);
-
-		mPlot->axisRect()->setRangeDragAxes(mPlot->xAxis, nullptr);
-		mPlot->axisRect()->setRangeZoomAxes(mPlot->xAxis, nullptr);
-
-		mPlot->setInteraction(QCP::iRangeDrag, true);
-		mPlot->setInteraction(QCP::iRangeZoom, true);
-
-		mPlot->legend->setVisible(true);
-
 		QVBoxLayout *dashboardLayout = new QVBoxLayout();
 		dashboardLayout->addLayout(periodLayout);
-		dashboardLayout->addLayout(optionsLayout);
-		dashboardLayout->addWidget(mPlot);
+
+		mDashboardWidget = createDashboardWidget();
+
+		mDummyWidget = new QWidget();
+		mDummyWidget->setVisible(false);
+
+		dashboardLayout->addWidget(mDashboardWidget);
+		dashboardLayout->addWidget(mDummyWidget);
 
 		QGroupBox *dashboardGroupBox = new QGroupBox(tr("Dashboard"));
 		dashboardGroupBox->setLayout(dashboardLayout);
@@ -123,14 +85,11 @@ namespace Vikki
 
 		setLayout(layout);
 
-		createEvent();
-
 		refreshClicked();
 	}
 
 	void SensorDashboard::destroy()
 	{
-		destroyEvent();
 	}
 
 	QString SensorDashboard::sensorName() const
@@ -143,17 +102,16 @@ namespace Vikki
 		return mSensorTitle;
 	}
 
-	void SensorDashboard::createEvent()
+	void SensorDashboard::showDashboardWidget()
 	{
+		mDashboardWidget->setVisible(true);
+		mDummyWidget->setVisible(false);
 	}
 
-	void SensorDashboard::destroyEvent()
+	void SensorDashboard::hideDashboardWidget()
 	{
-	}
-
-	QCustomPlot* SensorDashboard::plot() const
-	{
-		return mPlot;
+		mDashboardWidget->setVisible(false);
+		mDummyWidget->setVisible(true);
 	}
 
 	QDateTimeEdit* SensorDashboard::periodFrom() const
@@ -166,52 +124,12 @@ namespace Vikki
 		return mPeriodTo;
 	}
 
-	QCPGraph* SensorDashboard::createGraph(const QString& name, const QColor& color)
-	{
-		QPen pen;
-		pen.setBrush(color);
-
-		QCPGraph *graph = mPlot->addGraph();
-		graph->setName(name);
-		graph->setLineStyle(QCPGraph::lsLine);
-		graph->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssNone));
-		graph->setPen(pen);
-
-		return graph;
-	}
-
-	void SensorDashboard::updatePlot(double yLower, double yUpper)
-	{
-		double timeFrom = mPeriodFrom->dateTime().toTime_t();
-		double timeTo = mPeriodTo->dateTime().toTime_t();
-
-		mPlot->xAxis->setRange(timeFrom, timeTo);
-		mPlot->yAxis->setRange(yLower, yUpper);
-
-		mPlot->replot();
-	}
-
 	void SensorDashboard::refreshData()
 	{
 		uint from = mPeriodFrom->dateTime().toTime_t();
 		uint to = mPeriodTo->dateTime().toTime_t();
 
 		emit getSensorData(from, to);
-	}
-
-	void SensorDashboard::plotMouseWheel(QWheelEvent *event)
-	{
-		Q_UNUSED(event);
-	}
-
-	void SensorDashboard::periodFromChanged(const QDateTime& dateTime)
-	{
-		Q_UNUSED(dateTime);
-	}
-
-	void SensorDashboard::periodToChanged(const QDateTime& dateTime)
-	{
-		Q_UNUSED(dateTime);
 	}
 
 	void SensorDashboard::autoRefreshToggled(bool checked)
@@ -236,12 +154,5 @@ namespace Vikki
 		emit subscribeSensorData(false);
 
 		refreshData();
-	}
-
-	void SensorDashboard::showLegendToggled(bool checked)
-	{
-		mPlot->legend->setVisible(checked);
-
-		mPlot->replot();
 	}
 }

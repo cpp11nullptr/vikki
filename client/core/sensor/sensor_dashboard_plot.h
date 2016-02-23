@@ -24,54 +24,33 @@ SOFTWARE.
 
 */
 
-#ifndef VIKKI_FILE_SYSTEM_USAGE_SENSOR_H
-#define VIKKI_FILE_SYSTEM_USAGE_SENSOR_H
+#ifndef VIKKI_SENSOR_DASHBOARD_PLOT_H
+#define VIKKI_SENSOR_DASHBOARD_PLOT_H
 
-#include "exception.h"
-#include "sensor.h"
+#include <QPen>
+#include <QBrush>
 
-namespace vikki
+#include "../plot/qcustomplot.h"
+
+namespace Vikki
 {
-	class file_system_usage_sensor
-		: public sensor
+	class SensorDashboardPlot
+		: public QCustomPlot
 	{
-	public:
-		file_system_usage_sensor();
-		~file_system_usage_sensor() override;
+		Q_OBJECT
 
-		std::string name() const override;
-		std::vector<char> data() override;
+	public:
+		SensorDashboardPlot();
+		~SensorDashboardPlot() override;
+
+		void setRanges(double timeFrom, double timeTo, double dataFrom, double dataTo);
+
+		QCPGraph* createGraph(const QString& name, const QColor& color);
 
 	private:
-		struct file_system
-		{
-			std::string dir;
-			std::string device;
-			std::string type;
-			std::string options;
-		};
-
-		struct file_system_info
-		{
-			uint64_t total;
-			uint64_t free;
-			uint64_t avail;
-			uint64_t files;
-			uint64_t free_files;
-		};
-
-		uint64_t blocks_to_bytes(uint64_t value, uint64_t bsize) const;
-
-		std::vector<file_system> get_file_system_list() const;
-		file_system_info get_file_system_info(const std::string& dir) const;
+		void setup();
 
 	};
-
-	extern "C"
-	{
-		sensor* create_sensor();
-		void destroy_sensor(sensor *handle);
-	}
 }
 
-#endif // VIKKI_FILE_SYSTEM_USAGE_SENSOR_H
+#endif // VIKKI_SENSOR_DASHBOARD_PLOT_H

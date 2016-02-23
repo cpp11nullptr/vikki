@@ -29,7 +29,8 @@ SOFTWARE.
 namespace Vikki
 {
 	MemoryUsageSensorDashboard::MemoryUsageSensorDashboard(const QString& sensorName, const QString& sensorTitle)
-		: SensorDashboard(sensorName, sensorTitle), mMaxY(0)
+		: SensorDashboard(sensorName, sensorTitle), mMaxY(0), mPlot(nullptr), mGraphMemoryTotal(nullptr),
+		  mGraphMemoryUsed(nullptr), mGraphSwapTotal(nullptr), mGraphSwapUsed(nullptr)
 	{
 	}
 
@@ -68,6 +69,7 @@ namespace Vikki
 			valueSwapUsed.push_back(static_cast<double>(swapTotal - swapFree) / (1024 * 1024));
 
 			mMaxY = memoryTotal > mMaxY ? memoryTotal : mMaxY;
+			mMaxY = swapTotal > mMaxY ? swapTotal : mMaxY;
 		}
 
 		mGraphMemoryTotal->setData(time, valueMemoryTotal);
@@ -76,7 +78,8 @@ namespace Vikki
 		mGraphSwapTotal->setData(time, valueSwapTotal);
 		mGraphSwapUsed->setData(time, valueSwapUsed);
 
-		updatePlot(0.0, mMaxY / (1024 * 1024) * 1.2);
+		mPlot->setRanges(periodFrom()->dateTime().toTime_t(), periodTo()->dateTime().toTime_t(),
+			0.0, mMaxY / (1024 * 1024) * 1.1);
 	}
 
 	void MemoryUsageSensorDashboard::sensorDataUpdated(NetworkStreamInPointer stream)
@@ -107,15 +110,20 @@ namespace Vikki
 		mGraphMemoryTotal->addData(time, static_cast<double>(memoryTotal) / (1024 * 1024));
 		mGraphMemoryUsed->addData(time, static_cast<double>(memoryTotal - memoryFree) / (1024 * 1024));
 
-		updatePlot(0.0, mMaxY / (1024 * 1024) * 1.1);
+		mPlot->setRanges(periodFrom()->dateTime().toTime_t(), periodTo()->dateTime().toTime_t(),
+			0.0, mMaxY / (1024 * 1024) * 1.1);
 	}
 
-	void MemoryUsageSensorDashboard::createEvent()
+	QWidget* MemoryUsageSensorDashboard::createDashboardWidget()
 	{
-		mGraphMemoryTotal = createGraph(tr("Memory total"), Qt::green);
-		mGraphMemoryUsed = createGraph(tr("Memory used"), Qt::blue);
-		mGraphSwapTotal = createGraph(tr("Swap total"), Qt::magenta);
-		mGraphSwapUsed = createGraph(tr("Swap used"), Qt::cyan);
+		mPlot = new SensorDashboardPlot();
+
+		mGraphMemoryTotal = mPlot->createGraph(tr("Memory total"), Qt::green);
+		mGraphMemoryUsed = mPlot->createGraph(tr("Memory used"), Qt::blue);
+		mGraphSwapTotal = mPlot->createGraph(tr("Swap total"), Qt::magenta);
+		mGraphSwapUsed = mPlot->createGraph(tr("Swap used"), Qt::cyan);
+
+		return mPlot;
 	}
 }
 

@@ -28,6 +28,8 @@ SOFTWARE.
 #define VIKKI_LOAD_AVERAGE_SENSOR_DASHBOARD_H
 
 #include "../../core/sensor/sensor_dashboard.h"
+#include "../../core/sensor/sensor_dashboard_plot.h"
+
 #include "../../core/plot/qcustomplot.h"
 #include "../../core/network/network_stream_in.h"
 
@@ -46,10 +48,11 @@ namespace Vikki
 		void sensorDataUpdated(NetworkStreamInPointer stream) override;
 
 	protected:
-		void createEvent() override;
+		QWidget* createDashboardWidget() override;
 
 	private:
 		double mMaxY;
+		SensorDashboardPlot *mPlot;
 		QCPGraph *mGraph1m;
 		QCPGraph *mGraph5m;
 		QCPGraph *mGraph15m;

@@ -28,6 +28,8 @@ SOFTWARE.
 #define VIKKI_FILE_SYSTEM_USAGE_SENSOR_DASHBOARD_H
 
 #include "../../core/sensor/sensor_dashboard.h"
+#include "../../core/sensor/sensor_dashboard_plot.h"
+
 #include "../../core/plot/qcustomplot.h"
 #include "../../core/network/network_stream_in.h"
 
@@ -46,7 +48,44 @@ namespace Vikki
 		void sensorDataUpdated(NetworkStreamInPointer stream) override;
 
 	protected:
-		void createEvent() override;
+		QWidget* createDashboardWidget() override;
+
+	private:
+		struct FileSystemUsage
+		{
+			QString dir;
+			QString device;
+			QString options;
+			uint64_t total;
+			uint64_t free;
+			uint64_t available;
+			uint64_t files;
+			uint64_t freeFiles;
+		};
+
+		struct TimeStampInfo
+		{
+			int64_t timePoint;
+			QVector<char> data;
+		};
+
+		SensorDashboardPlot *mSpacePlot;
+		SensorDashboardPlot *mFilePlot;
+
+		QCPBars *mSpaceUsageBar;
+		QCPBars *mFileUsageBar;
+
+		QSlider *mTimeScale;
+		QLabel *mTimeStamp;
+		QVector<TimeStampInfo> mTimeStampData;
+
+		SensorDashboardPlot* createPlot(QCPBars *&usageBar) const;
+
+		QVector<FileSystemUsage> fileSystemUsage(const QVector<char>& data) const;
+
+	private slots:
+		void timeScaleMoved();
+		void timeScaleReleased();
 
 	};
 }

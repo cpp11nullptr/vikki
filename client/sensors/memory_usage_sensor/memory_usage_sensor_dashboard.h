@@ -28,6 +28,8 @@ SOFTWARE.
 #define VIKKI_MEMORY_USAGE_SENSOR_DASHBOARD_H
 
 #include "../../core/sensor/sensor_dashboard.h"
+#include "../../core/sensor/sensor_dashboard_plot.h"
+
 #include "../../core/plot/qcustomplot.h"
 #include "../../core/network/network_stream_in.h"
 
@@ -46,10 +48,11 @@ namespace Vikki
 		void sensorDataUpdated(NetworkStreamInPointer stream) override;
 
 	protected:
-		void createEvent() override;
+		QWidget* createDashboardWidget() override;
 
 	private:
 		uint64_t mMaxY;
+		SensorDashboardPlot *mPlot;
 		QCPGraph *mGraphMemoryTotal;
 		QCPGraph *mGraphMemoryUsed;
 		QCPGraph *mGraphSwapTotal;

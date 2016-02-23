@@ -18,6 +18,7 @@ TARGET =\
 SOURCES += \
 	../../core/sensor/sensor_plugin.cpp \
 	../../core/sensor/sensor_dashboard.cpp \
+	../../core/sensor/sensor_dashboard_plot.cpp \
 	../../core/plot/qcustomplot.cpp \
 	../../core/network/network_stream_in.cpp \
 	../../core/network/network_stream_out.cpp \
@@ -27,6 +28,7 @@ SOURCES += \
 HEADERS += \
 	../../core/sensor/sensor_plugin.h \
 	../../core/sensor/sensor_dashboard.h \
+	../../core/sensor/sensor_dashboard_plot.h \
 	../../core/plot/qcustomplot.h \
 	../../core/network/network_stream_in.h \
 	../../core/network/network_stream_out.h \

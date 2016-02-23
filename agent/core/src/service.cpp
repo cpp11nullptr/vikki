@@ -145,6 +145,11 @@ namespace vikki
 				const std::string& sensor_name = sens->name();
 				const std::vector<char>& sensor_data = sens->data();
 
+				if (sensor_data.size() == 0)
+				{
+					continue;
+				}
+
 				if (_active_storage != nullptr)
 				{
 					_active_storage->put_data(sensor_name, time, sensor_data);

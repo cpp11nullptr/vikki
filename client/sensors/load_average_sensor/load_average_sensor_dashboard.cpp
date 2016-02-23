@@ -29,7 +29,8 @@ SOFTWARE.
 namespace Vikki
 {
 	LoadAverageSensorDashboard::LoadAverageSensorDashboard(const QString& sensorName, const QString& sensorTitle)
-		: SensorDashboard(sensorName, sensorTitle), mMaxY(0.0)
+		: SensorDashboard(sensorName, sensorTitle), mMaxY(0.0), mPlot(nullptr),
+		  mGraph1m(nullptr), mGraph5m(nullptr), mGraph15m(nullptr)
 	{
 	}
 
@@ -71,7 +72,8 @@ namespace Vikki
 		mGraph5m->setData(time, value5);
 		mGraph15m->setData(time, value15);
 
-		updatePlot(0.0, mMaxY * 1.1);
+		mPlot->setRanges(periodFrom()->dateTime().toTime_t(), periodTo()->dateTime().toTime_t(),
+			0.0, mMaxY * 1.1);
 	}
 
 	void LoadAverageSensorDashboard::sensorDataUpdated(NetworkStreamInPointer stream)
@@ -99,13 +101,18 @@ namespace Vikki
 		mGraph5m->addData(time, la5);
 		mGraph15m->addData(time, la15);
 
-		updatePlot(0.0, mMaxY * 1.2);
+		mPlot->setRanges(periodFrom()->dateTime().toTime_t(), periodTo()->dateTime().toTime_t(),
+			0.0, mMaxY * 1.1);
 	}
 
-	void LoadAverageSensorDashboard::createEvent()
+	QWidget* LoadAverageSensorDashboard::createDashboardWidget()
 	{
-		mGraph1m = createGraph(tr("1 minute"), Qt::green);
-		mGraph5m = createGraph(tr("5 minutes"), Qt::blue);
-		mGraph15m = createGraph(tr("15 minutes"), Qt::magenta);
+		mPlot = new SensorDashboardPlot();
+
+		mGraph1m = mPlot->createGraph(tr("1 minute"), Qt::green);
+		mGraph5m = mPlot->createGraph(tr("5 minutes"), Qt::blue);
+		mGraph15m = mPlot->createGraph(tr("15 minutes"), Qt::magenta);
+
+		return mPlot;
 	}
 }
